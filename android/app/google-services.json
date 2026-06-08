@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "392946189770",
+    "project_id": "bloquepantalla",
+    "storage_bucket": "bloquepantalla.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:392946189770:android:11775aa5d4f2654d4bbb33",
+        "android_client_info": {
+          "package_name": "com.roque.bloquepantalla"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAlKalIVJKaiUnZClnnAIrv7ZSXzxJ134I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
