@@ -22,11 +22,12 @@ class _HomeScreenState extends State<HomeScreen> with SecureScreenMixin {
   }
 
   Future<void> _loadData() async {
+    await SecureStorageService.initializeDefaultData();
     final data = await SecureStorageService.readAll();
     setState(() {
       _sensitiveData = data;
     });
-  }
+  } // ← esta llave faltaba
 
   Future<void> _getFCMToken() async {
     String? token = await FirebaseMessaging.instance.getToken();

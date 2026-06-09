@@ -29,13 +29,13 @@ class FCMService {
   }
 
   static void _handleMessage(RemoteMessage message) {
-    debugPrint('[FCM] Mensaje recibido: ${message.data}');
-    
-    // Verificar si la notificación contiene la acción de borrado
-    if (message.data['action'] == 'wipe_data') {
-      SecureStorageService.wipeAllData();
-    }
+  debugPrint('[FCM] Mensaje recibido: ${message.data}');
+  
+  if (message.data['action'] == 'wipe_data') {
+    // Opcional: verificar que el user_id coincida con el usuario actual
+    SecureStorageService.wipeAllData();
   }
+}
 }
 
 // Función global obligatoria para segundo plano

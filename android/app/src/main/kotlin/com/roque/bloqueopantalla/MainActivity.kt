@@ -1,4 +1,4 @@
-package com.example.flutter_application_33
+package com.roque.bloquepantalla
 
 import android.os.Bundle
 import android.view.WindowManager
