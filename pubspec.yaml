@@ -33,6 +33,9 @@ dependencies:
   firebase_core: ^3.10.1
   firebase_messaging: ^15.2.10
   flutter_secure_storage: ^9.2.2
+  safe_device: ^1.1.5
+  trust_location: ^2.0.10
+  geolocator: ^13.0.2
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
