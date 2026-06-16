@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'secure_mixin.dart';
-import 'security_service.dart'; // ← NUEVO
+import 'security_service.dart';
+import 'integrity_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -51,42 +52,62 @@ class _LoginScreenState extends State<LoginScreen>
     _animCtrl.forward();
   }
 
-  // ── NUEVO: verificación ADB ──────────────────────────────────
   Future<void> _checkSecurity() async {
+    // 1. Verificar depuración USB
     final adbActive = await SecurityService.isUsbDebuggingEnabled();
     if (adbActive && mounted) {
-      _showSecurityAlert();
+      _showBlockingAlert(
+        icon: Icons.gpp_bad_rounded,
+        title: 'Entorno No Seguro',
+        message: 'Se detectó que la Depuración USB (USB Debugging) '
+            'está activa en este dispositivo.\n\n'
+            'Por políticas de seguridad esta aplicación no puede '
+            'ejecutarse en un entorno de depuración.\n\n'
+            'Para continuar desactívala en:\n'
+            'Ajustes → Opciones de desarrollador → Depuración USB',
+      );
+      return;
+    }
+
+    // 2. Verificar Fake GPS / ubicación simulada
+    final isMocked = await IntegrityService.checkMockLocation();
+    if (isMocked && mounted) {
+      _showBlockingAlert(
+        icon: Icons.location_off_rounded,
+        title: 'Ubicación No Real',
+        message: 'Se detectó que estás usando una aplicación de '
+            'ubicación falsa (Fake GPS).\n\n'
+            'Por políticas de seguridad esta aplicación requiere '
+            'tu ubicación real para continuar.\n\n'
+            'Desactiva la aplicación de Fake GPS y vuelve a '
+            'intentarlo.',
+      );
     }
   }
 
-  void _showSecurityAlert() {
+  void _showBlockingAlert({
+    required IconData icon,
+    required String title,
+    required String message,
+  }) {
     showDialog(
       context: context,
-      barrierDismissible: false, // no se descarta al tocar fuera
+      barrierDismissible: false,
       builder: (_) => AlertDialog(
         backgroundColor: _surface,
         shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        icon: const Icon(
-          Icons.gpp_bad_rounded,
-          color: Color(0xFFFF4C6A),
-          size: 52,
-        ),
-        title: const Text(
-          'Entorno No Seguro',
+        icon: Icon(icon, color: _error, size: 52),
+        title: Text(
+          title,
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: const TextStyle(
               color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
         ),
-        content: const Text(
-          'Se detectó que la Depuración USB (USB Debugging) '
-          'está activa en este dispositivo.\n\n'
-          'Por políticas de seguridad esta aplicación no puede '
-          'ejecutarse en un entorno de depuración.\n\n'
-          'Para continuar desactívala en:\n'
-          'Ajustes → Opciones de desarrollador → Depuración USB',
+        content: Text(
+          message,
           textAlign: TextAlign.center,
-          style: TextStyle(
+          style: const TextStyle(
               color: Color(0xFF6B8CAE), height: 1.55, fontSize: 13),
         ),
         actionsAlignment: MainAxisAlignment.center,
@@ -95,7 +116,7 @@ class _LoginScreenState extends State<LoginScreen>
             icon: const Icon(Icons.exit_to_app_rounded),
             label: const Text('Cerrar aplicación'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFFF4C6A),
+              backgroundColor: _error,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10)),
@@ -108,7 +129,6 @@ class _LoginScreenState extends State<LoginScreen>
       ),
     );
   }
-  // ── FIN NUEVO ────────────────────────────────────────────────
 
   @override
   void dispose() {
